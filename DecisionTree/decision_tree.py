@@ -4,9 +4,10 @@
 import sys
 import os
 import math
+import argparse
 
 """
-Author : zengkui
+Author : zengkui@domob.cn
 Created Time : Sun 03 Nov 2012 10:12:47 PM CST
 FileName : decision_tree.py
 Description : text classifier 
@@ -18,39 +19,35 @@ wid2word = {}
 didwordlist = {} 
 widdoclist = {}
 
-def load():
-    fp = open( "./doc2word_index" )
-    a,b,c = fp.readline().strip('\r\n').split('\t')
-    for i in range ( 0, int(a) ):
-        doc_id,word_count,label = fp.readline().strip('\r\n').split('\t')
-        doc_id = int(doc_id)
-        word_count = int(word_count)
-        label = int(label)
-        did2label[doc_id] = label
-        didwordlist[doc_id] = set()
-        for k in range (0, word_count ) :
-            word, word_id, tf = fp.readline().strip('\r\n').split('\t')
-            wid = int(word_id)
-            tf = int(tf)
-            wid2word[wid] = word
-            didwordlist[doc_id].add(wid)
-    fp.close()
+def load_train_data( file_path ):
 
-    fp = open("./word2doc_index")
-    n = fp.readline().strip('\r\n')
-    for i in range (0, int(n) ):
-        word,wid,df = fp.readline().strip('\r\n').split('\t')
-        wid = int(wid)
-        df = int(df)
-        widdoclist[wid] = set()
-        for k in range (0, df):
-            doc_id,label = fp.readline().strip('\r\n').split('\t')
-            doc_id = int(doc_id)
-            label = int(label)
-            widdoclist[wid].add(doc_id)
-    fp.close()
-
-
+    fp = open(file_path)
+    did = 0
+    word_idx = {}
+    wid = 0
+    doc_list = set()
+    while True :
+        line = fp.readline()
+        if len(line) <= 0 :
+            break
+        arr = line.strip('\r\n').split('\t')
+        label = int(arr[0])
+        did2label[did] = label
+        didwordlist[did] = set()
+        for w in arr[1:]:
+            if len(w) <= 3 :
+                  continue
+            if w not in word_idx:
+                word_idx[w] = wid                   
+                wid2word[wid] = w
+                widdoclist[wid] = set()
+                wid += 1
+            widdoclist[word_idx[w]].add(did)
+            didwordlist[did].add(word_idx[w])
+        doc_list.add(did)
+        did += 1
+    return doc_list
+    
 def entropy( num, den ):
     if num == 0 :
         return 0
@@ -74,14 +71,14 @@ class DecisionTree :
         else :
             return self.child["right"].predict(word_list)
 
-    def visualize(self) :
+    def visualize(self, d) :
         "visualize the tree"
         for i in range (0, d) :
             print "-",
         print "(%s,%d,%d)" % ( self.word,self.positive, self.negative)
         if len(self.child) != 0 :
-            self.child["left"].visualize()
-            self.child["right"].visualize()
+            self.child["left"].visualize(d + 1)
+            self.child["right"].visualize(d + 1)
          
     def build_dt(self, doc_list ) :
         self.doc_count = len(doc_list)
@@ -165,13 +162,28 @@ def info_gain(doc_list):
 
 if __name__ == "__main__" :
 
-    load()
+    parser = argparse.ArgumentParser( description = "Decision Tree training and testing" )
+    parser.add_argument( "-i", "--train_data", help = "training data")
+    parser.add_argument( "-t", "--test_data", help = "testing data")
+    args = parser.parse_args()
+    
+    train_file = args.train_data
+    test_file  = args.test_data
+    if not train_file or not os.path.exists(train_file) :
+        parser.print_help()
+        sys.exit()
+    if not test_file or not os.path.exists(test_file) :
+        parser.print_help()
+        sys.exit()
+    
+    doc_list = load_train_data( train_file )
+
     dt = DecisionTree()
-    doc_list = set() 
-    for did in did2label :
-        doc_list.add(did)
     dt.build_dt(doc_list)
-    fp = open("data.test")
+    dt.visualize(0)
+    sys.exit()
+
+    fp = open(test_file)
     true_positive = 0
     false_positive = 0
     positive = 0
