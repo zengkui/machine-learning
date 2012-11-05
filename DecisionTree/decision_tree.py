@@ -180,8 +180,7 @@ if __name__ == "__main__" :
 
     dt = DecisionTree()
     dt.build_dt(doc_list)
-    dt.visualize(0)
-    sys.exit()
+    #dt.visualize(0)
 
     fp = open(test_file)
     true_positive = 0
