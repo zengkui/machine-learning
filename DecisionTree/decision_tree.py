@@ -207,7 +207,7 @@ if __name__ == "__main__" :
             positive += 1
         else :
             negative += 1
-        if p == 1 :
+        if p >= 0.5 :
             if label == 1 : 
                 true_positive += 1
             else :
