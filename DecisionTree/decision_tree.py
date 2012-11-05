@@ -7,7 +7,7 @@ import math
 import argparse
 
 """
-Author : zengkui@domob.cn
+Author : zengkui111@gmail.com
 Created Time : Sun 03 Nov 2012 10:12:47 PM CST
 FileName : decision_tree.py
 Description : text classifier 
