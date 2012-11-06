@@ -64,7 +64,7 @@ class LogisticRegression :
                 self.__X[idx][fidx] = ( x[fidx] - min_value[fidx] ) / ( max_value[fidx] - min_value[fidx] )  
 
 
-    def bath_learning_alogrithm (self) :
+    def batch_learning_alogrithm (self) :
         last_loss = 0
         for  itr in range ( 1, 100000 ) :    
             self.__training () 
