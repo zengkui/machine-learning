@@ -14,6 +14,17 @@ import math
 
 """
 A very intresting problem.
+23784 = 2
+36781 = 3
+80312 = 3 
+19032 = 3
+10986 = 5
+What the next result ?
+30390 = ?
+16023 = ?
+......
+This problem can be solved by linear regression.
+The following code is the answer.
 """
 
 class LinearRegression :
