@@ -1,6 +1,9 @@
 This repo is about machine learning.
 TOOLS:
 ----->roc:roc.py
+      get the point of roc
+----->model_evaluate.py
+      report the precision, recall and accuarcy. 
 
 Classification:
 ----->DecisionTree : decision_tree.py
@@ -14,3 +17,8 @@ Classification:
 ----->LinearRegression
       More detail information with chinese
       http://zengkui.blog.163.com/blog/static/21230008220127411250679/
+----->K-NN classification algorithm. 
+      Data is represented by vsm and the features in vsm are the words 
+      selected by max info gain. The distance between samples is measured 
+      by cosine.
+ 
