@@ -18,7 +18,7 @@ import model_evaluate
 Description : 
     K-NN classification algorithm. 
     Data is represented by vsm and the features in vsm are the words selected by max info gain.
-    The distance between samples is measured by cosine.
+    The distance between samples is measured by cosine and Euclidean distance.
 ChangeLog : 
 """
 class Sample:
@@ -48,10 +48,24 @@ def inc(mydict, key, value):
 
         
 class KNNClassifier:
-    def __init__(self, K):
+    def __init__(self, K = None, dist_func = "c"):
         self.__word_dict = set()
         self.__training_samples = []
-        self.__K = K 
+        self.__K = 11
+        if K != None :
+            self.__K = K 
+            sys.stderr.write ( "K number = %d!\n" %  self.__K)
+        else :
+            sys.stderr.write ( "Default K = 11!\n")
+
+
+        self.__dist_type = "cosine"
+        if dist_func == "e" :
+            self.__dist_type = "euclidean" 
+            sys.stderr.write ( "Distance function is euclidean !\n")
+        else :
+            sys.stderr.write ( "Cosine distance is default !\n")
+        
 
     def __entropy(self, num, den) :
         if  num == 0:
@@ -120,6 +134,24 @@ class KNNClassifier:
         fp.close()
 
     def __distance(self, s1, s2):
+        if self.__dist_type == "euclidean" :
+            return self.__euclidea_distance(s1, s2)
+        else:
+            return self.__cosine(s1, s2)
+
+    def __euclidea_distance( self, s1, s2):
+        dist = 0.0
+        for w in self.__word_dict:
+            x = 0.0
+            y = 0.0
+            if w in s1.vsm:
+                x = s1.vsm[w]
+            if w in s2.vsm:
+                y = s2.vsm[w]
+            dist += (x - y) * ( x - y)
+        return math.sqrt(dist)
+
+    def __cosine(self, s1, s2 ):
         num = 0.0
         den1 = 0.0
         den2 = 0.0
@@ -137,10 +169,11 @@ class KNNClassifier:
     def __classifier(self, test_sample):
         category = []
         for s in self.__training_samples:
-            cosine = self.__distance(s, test_sample)
-            category.append((cosine, s.label))
+            dist = self.__distance(s, test_sample)
+            category.append((dist, s.label))
         category.sort()
-        category.reverse()
+        if self.__dist_type == "cosine" :
+            category.reverse()
         positive = 0.0
         for d,l in category[:self.__K]:
             if l >= 0:
@@ -170,7 +203,6 @@ class KNNClassifier:
             p = self.__classifier(test_sample)
             wfp.write( "%d\t%f\n" % (label, p))
             total += 1
-            sys.stderr.write( "predict [%d] [%f]\n" % ( total, p) )
             if p > 0.5:
                 p = 1
             else :
@@ -185,14 +217,20 @@ class KNNClassifier:
 if __name__ == "__main__" : 
 
     parser = argparse.ArgumentParser( description = "KNN classifer" )
+    parser.add_argument( "-d", "--dist_function", help = "distance function [e|c]")
     parser.add_argument( "-s", "--train_file", help = "sample file")
     parser.add_argument( "-t", "--test_file", help = "test file")
     parser.add_argument( "-o", "--output_file", help = "output file")
+    parser.add_argument( "-k", "--k_nn", help = "K number")
     args = parser.parse_args()
 
     train_file = args.train_file 
     test_file = args.test_file
     output_file = args.output_file
+    dist_func = args.dist_function
+
+    if args.k_nn :
+        k_number = int(args.k_nn)
     if not train_file or not os.path.exists(train_file):
         parser.print_help()
         sys.exit(1)
@@ -200,6 +238,6 @@ if __name__ == "__main__" :
         parser.print_help()
         sys.exit(1)
    
-    knn = KNNClassifier(11)
+    knn = KNNClassifier(k_number, dist_func)
     knn.load_training_sample(train_file)
     knn.predict(test_file, output_file)
