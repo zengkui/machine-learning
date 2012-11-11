@@ -21,4 +21,14 @@ Classification:
       Data is represented by vsm and the features in vsm are the words 
       selected by max info gain. The distance between samples is measured 
       by cosine.
+----->Naive Bayes 
+      Naive Bayes classification algorithm.
+      Bayes formular : P(C|w) = P(C,w) / P(w) = P(w|C) * P(C) / P(w)
+      C : the category of articel.
+      w : the words in articel
+      Suppose that the probability of occurrence of a word in an article is 
+      independent. We can classify the article by the following formular:
+      P(C_i|w_1,w_2...w_n) = P(w_1,w_2...w_n|C_i) * P(C_i) / P(w_1,w_2...w_n)
+      = P(w_1|C_i) * P(w_2|C_i)...P(w_n|C_i) * P(C_i) / (P(w_1) * P(w_2) ...P(w_n))
+
  
