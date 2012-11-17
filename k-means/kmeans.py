@@ -18,7 +18,7 @@ import argparse
 Algorithm description : 
     In data mining, k-means aims to partition N samples to K clusters.
 How to judge two center is the same?
-    the cosine distance between two centers is greater than 0.95
+    the cosine distance between two centers is less than 0.0001:
 ChangeLog : 
 """
 
