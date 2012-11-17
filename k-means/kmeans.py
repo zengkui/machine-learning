@@ -18,7 +18,7 @@ import argparse
 Algorithm description : 
     In data mining, k-means aims to partition N samples to K clusters.
 How to judge two center is the same?
-    the cosine distance between two centers is less than 0.0001:
+    the cosine distance between two centers is less than 0.0001
 ChangeLog : 
 """
 
@@ -63,21 +63,14 @@ class KMeans:
         return v
 
     def init_center(self, center_file):
-        category = {}
-        article_vsm = {}
-        article_id = 1
         fp = open(center_file)
         while True:
             line = fp.readline()
             if len(line) <= 0:
                 break
             words = line.strip('\r\n').split('\t')
-            vsm = self.__get_vsm(words[1:])
-            category[article_id] = words[0]
-            article_vsm[article_id] = vsm
-            article_id += 1
+            self.__cluster_center[words[0]] = self.__get_vsm(words[1:])
         fp.close()
-        self.__cluster_center = self.__adjust_center(category, article_vsm)
 
             
     def __cosine(self, vsm_a, vsm_b):
@@ -201,12 +194,15 @@ if __name__ == "__main__" :
     data_file = args.data_file
     output_file = args.output_file
     if not word_dict or not os.path.exists(word_dict):
+        sys.stderr.write( "word dict file may be not exists !!!\n")
         parser.print_help()
         sys.exit(1)
     if not center_file or not os.path.exists(center_file):
+        sys.stderr.write( "center file may be not exists !!!\n")
         parser.print_help()
         sys.exit(1)
     if not data_file or not os.path.exists(data_file):
+        sys.stderr.write( "input data file may be not exists !!!\n")
         parser.print_help()
         sys.exit(1)
 
