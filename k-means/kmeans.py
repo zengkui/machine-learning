@@ -17,7 +17,6 @@ import argparse
 """
 Algorithm description : 
     In data mining, k-means aims to partition N samples to K clusters.
-    The sim function in this code is the cosine distance. 
 How to judge two center is the same?
     the cosine distance between two centers is greater than 0.95
 ChangeLog : 
@@ -43,8 +42,8 @@ class KMeans:
 
     def __inc(self, d, k, v):
         if k not in d :
-            d[k] = 0
-        d[k] = v
+            d[k] = 0.0
+        d[k] += v
 
     def __normalized(self, v):
         den = 0.0
@@ -81,7 +80,7 @@ class KMeans:
         self.__cluster_center = self.__adjust_center(category, article_vsm)
 
             
-    def __distance(self, vsm_a, vsm_b):
+    def __cosine(self, vsm_a, vsm_b):
         num = 0.0
         den1 = 0.0
         den2 = 0.0
@@ -95,17 +94,38 @@ class KMeans:
             den1 += a * a 
             den2 += b * b 
             num += a * b 
+        if den1 * den2 == 0 :
+            return 0
         return num /(math.sqrt(den1) * math.sqrt(den2))
+
+    def __euclidean(self, vsm_a, vsm_b):
+        dist = 0.0
+        for w in self.__word_dict:
+            a = 0.0
+            b = 0.0
+            if w  in vsm_a:
+                a = vsm_a[w]
+            if w in vsm_b:
+                b = vsm_b[w]
+            dist += (a - b) * (a - b)
+        return math.sqrt(dist) 
+
+    def __distance(self, vsm_a, vsm_b, dtype = None ):
+        if dtype == "euclidean" :
+            dist = self.__euclidean( vsm_a, vsm_b )
+        else :
+            dist = 1 - self.__cosine( vsm_a, vsm_b )
+        return dist
 
     def __assignment(self, article_vsm ):
         category = {}
         for aid in article_vsm:
-            min_sim = 0.0
+            min_dist =   999999 
             label = None
             for l in self.__cluster_center:
-                sim = self.__distance( article_vsm[aid], self.__cluster_center[l])
-                if sim >  min_sim:
-                    min_sim = sim 
+                dist = self.__distance( article_vsm[aid], self.__cluster_center[l])
+                if dist <  min_dist:
+                    min_dist = dist 
                     label = l
             category[aid] = label
         return category
@@ -122,15 +142,16 @@ class KMeans:
             self.__inc(counter, c, 1.0) 
         for c in center:
             for w in center[c]:
-                center[c][w] /= counter[c] 
+                center[c][w] = float(center[c][w]) / float(counter[c])
         return center
 
     def __center_cmp(self, center):
         ret = False
+        sys.stderr.write ("Center Diff :\n")
         for c in self.__cluster_center:
             dist = self.__distance( center[c], self.__cluster_center[c] )
-            print c, dist 
-            if dist < 0.95:
+            sys.stderr.write( "%s : %f\n" % ( c, dist))
+            if dist >= 0.0001:
                 ret = True 
         return ret 
 
@@ -151,13 +172,13 @@ class KMeans:
         fp.close()
         
         any_change = True
-        itr = 1
+        itr = 1 
         while any_change : 
+            sys.stderr.write( "iter : %d ...\n" % itr)
             category = self.__assignment( article_vsm ) 
             cluster_center = self.__adjust_center(category, article_vsm)
             any_change  = self.__center_cmp( cluster_center )
             self.__cluster_center = cluster_center
-            sys.stderr.write( "iter : %d ...\n" % itr)
             itr += 1
         fp = open(output_file, "w")
         for aid in category:
