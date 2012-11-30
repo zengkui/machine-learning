@@ -1,11 +1,11 @@
 #!/usr/local/bin/python
 # -*- coding : utf-8 -*-
 
-__author__ = "zengkui@domob.cn"
+__author__ = "zengkui111@gmail.com"
 __version__ = "$Revision: 1.0 $"
 __date__ = "$Mon 05 Nov 2012 04:51:41 PM CST $"
-__fileName__ = "knn.py"
-__copyright__ = "Copyright (c) 2012 domob"
+__fileName__ = "naive_bayes.py"
+__copyright__ = "Copyright (c) 2012 zengkui"
 __license__ = "Python"
 
 import os
