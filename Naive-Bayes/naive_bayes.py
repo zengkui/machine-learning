@@ -97,13 +97,13 @@ class NaiveBayes:
 
         cate = {}
         for l in self.category_prob:
-            cate[l] = 1.0
+            cate[l] = self.category_prob[l] 
         for w in articel_words: 
             if w not in self.model:
                 continue
             for l in self.category_prob:
                 if l in self.model[w] :
-                    p = self.model[w][l] * self.category_prob[l] 
+                    p = self.model[w][l] 
                     cate[l] = cate[l] * p 
         label = None
         max_prob = -1
