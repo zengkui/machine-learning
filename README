@@ -30,6 +30,11 @@ Classification:
       independent. We can classify the article by the following formular:
       P(C_i|w_1,w_2...w_n) = P(w_1,w_2...w_n|C_i) * P(C_i) / P(w_1,w_2...w_n)
       = P(w_1|C_i) * P(w_2|C_i)...P(w_n|C_i) * P(C_i) / (P(w_1) * P(w_2) ...P(w_n))
+----->Adaboost
+      Adaboost classification algorithm.
+      you can get more detail info with the following link:
+      http://en.wikipedia.org/wiki/AdaBoost
+      http://zengkui.blog.163.com/blog/static/21230008220121110111925175/
 Cluster:
 ----->K-means
       More detail information with chinese
